@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Orden {
-	private static int consecutivo = 1;
+	private static int consecutivoO = 1;
 	private Integer numOrden;
 	private LocalDateTime fecha;
 	private Integer estado;
@@ -36,7 +36,7 @@ public class Orden {
 	}
 
 	public static int getConsecutivo() {
-		return consecutivo;
+		return consecutivoO;
 	}
 
 	public LocalDateTime getFecha() {
