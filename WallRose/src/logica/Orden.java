@@ -10,6 +10,7 @@ public class Orden {
 	private Integer estado;
 	private List<Linea> lineas = new ArrayList<>();
 	private Cliente cliente;
+
 	private static Double impuesto = 0.13;
 	
 	public Orden(Integer estado, Integer numOrden, Cliente cliente) {
@@ -17,6 +18,7 @@ public class Orden {
 		this.numOrden = numOrden;
 		this.fecha = LocalDateTime.now();
 		this.estado = estado;
+		consecutivoO++;
 	}
 
 	public Integer getNumOrden() {
@@ -50,5 +52,41 @@ public class Orden {
 	public static Double getImpuesto() {
 		return impuesto;
 	}
+	public List<Linea> getLineas() {
+		return lineas;
+	}
+	//AGREGADAS
+	
+	//Suma el costo de todas las líneas, sin impuesto
+	public double calcularMonto() {
+        double total = 0;
+        
+        for (Linea l : lineas) {
+            total += l.calcularCosto();
+        }
+        return total;
+    }
+ 
+    // valor del impuesto en el monto
+    public double calcularMontoImpuesto() {
+        return calcularMonto() * impuesto;
+    }
+ 
+    // Total final: monto + impuesto
+    public double calcularMontoTotal() {
+        return calcularMonto() + calcularMontoImpuesto();
+    }
+ 
+    // Agrega una línea al final de la lista
+    public void agregarLinea(Linea linea) {
+        lineas.add(linea);
+    }
+ 
+    // Borra la línea en la posición indicada (0 = primera)
+    public void borrarLinea(int numLinea) {
+        if (numLinea >= 0 && numLinea < lineas.size()) {
+            lineas.remove(numLinea);
+        }
+    }
 	
 }

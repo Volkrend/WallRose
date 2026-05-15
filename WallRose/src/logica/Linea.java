@@ -21,5 +21,8 @@ public class Linea {
     	return producto; 
     	}
 
-
+    // precio unitario × cantidad
+    public double calcularCosto() {
+        return producto.getPrecio() * cantidad;
+    }
 }
