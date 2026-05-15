@@ -1,7 +1,6 @@
 package logica;
 
 public class Producto {
-	private static int consecutivoP = 0;
 	private Integer codigoP;
 	private String nombre;
 	private Double existencias;
@@ -14,7 +13,6 @@ public class Producto {
 		this.existencias = existencias;
 		this.unidad = unidad; 
 		this.precio = precio;
-		consecutivoP++;
 	}
 
 	public String getNombre() {
@@ -51,10 +49,6 @@ public class Producto {
 
 	public Integer getCodigoP() {
 		return codigoP;
-	}
-
-	public static int getConsecutivo() {
-		return consecutivoP;
 	}
 	
 }

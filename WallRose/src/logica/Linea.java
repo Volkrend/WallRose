@@ -25,4 +25,8 @@ public class Linea {
     public double calcularCosto() {
         return producto.getPrecio() * cantidad;
     }
+
+	public void setProducto(Producto producto) {
+		this.producto = producto;
+	}
 }

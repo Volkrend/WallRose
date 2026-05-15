@@ -15,6 +15,8 @@ public class Controladora {
 	private Map<String, Cliente> clientes;
 	private Map<Integer, Orden> ordenes;
 	private Map<Integer, Producto> productos;
+	private int consecutivoP = 1;
+	private int consecutivoO = 1; //manejarlos mas facil
 
 	private Controladora() {
 	    this.clientes = new TreeMap<String, Cliente>();
@@ -70,7 +72,7 @@ public class Controladora {
     	 
         for (Orden o : obtenerOrdenesIniciadas(idCliente)) {  // recorre todas
             if (o.getEstado() == 1) {           
-                resultado.add(o);                                  // agrega si pasa
+                resultado.add(o);                                  
             }
         }
         return resultado;
@@ -99,6 +101,10 @@ public class Controladora {
         return new ArrayList<>(productos.values());
     }
     
+    public Producto obtenerProducto(Integer codigoP) {
+    	return productos.get(codigoP);
+    }
+    
     //Crear producto nuevo a partir (nombre, existencias, unidad, precio)
     public void crearProducto(String nombre, Double existencias, String unidad, Double precio) {
     	Producto nuevo = new Producto(consecutivoP, nombre, existencias, unidad, precio);
@@ -123,7 +129,7 @@ public class Controladora {
     
     //METODOS ORDEN//
     
-  //Obtener los datos de una orden de compra a partir de su número 
+    //Obtener los datos de una orden de compra a partir de su número 
     //(id de cliente, nombre de cliente, estado, fecha, monto, monto del impuesto, monto total)
     public Orden obtenerOrden(Integer numeroOrden) {
         return ordenes.get(numeroOrden);
@@ -135,7 +141,7 @@ public class Controladora {
     }
     //Obtener monto total de todas las órdenes pendientes.
     public Double obtenerMontoTotalPendiente() {
-        double total = 0.0;
+        double total = 0;
         for (Orden o : ordenes.values()) {                        
             if (o.getEstado() == 1) {       
                 total += o.calcularMontoTotal();  //agregar falta
@@ -144,30 +150,27 @@ public class Controladora {
         return total;
     }
     //Crear orden de compra vacía a partir del ID del cliente. Iniciada, fecha actual, sin líneas. Retornar el número de orden.
-    public Integer crearOrdenVacia(String idCliente) {
-        Cliente c = obtenerCliente(idCliente);  
+    public void crearOrdenVacia(String idCliente) throws Exception { 
+        Cliente c = clientes.get(idCliente); //restriccion
         if (c == null) {
-            System.out.println("Error: cliente '" + idCliente + "' no encontrado.");
-            return;  // 
+           throw new Exception("Error: cliente no encontrado.");
         }
- 
-        Orden nueva = new Orden(consecutivoO, c);   
-        ordenes.put(consecutivoO, nueva);            
-        c.agregarOrden(nueva);   
-        return consecutivoO;
-                            
+        
+        int numOrden = consecutivoO;
+        Orden nueva = new Orden(0, numOrden, c);
+        ordenes.put(numOrden, nueva);       // 
+        c.getOrdenes().add(nueva);          // revisar, cambiar
+        consecutivoO++;
+
     }
     
     //Obtener listado de línead e una orden de compra a partir de su número 
     //(código de producto, nombre de producto, cantidad, unidades, costo de línea).
-    public ArrayList<Linea> obtenerLineasOrden(Integer numOrden) {
-        Orden o = obtenerOrden(numOrden);
-        if (o != null) {
-        	return o.getLineas(); //cambiar
-        } else {
-            return new ArrayList<>();
-        }
+    public ArrayList<Linea> obtenerLineasOrden(Integer numOrden) { //agregado profe
+        Orden o = ordenes.get(numOrden);
+        return new ArrayList<>(o.getLineas());
     }
+    
     //Poner orden como pendiente, a partir de su número.
     public void ponerOrdenPendiente(Integer numeroOrden) {
         Orden o = obtenerOrden(numeroOrden);
@@ -191,13 +194,17 @@ public class Controladora {
 	    Linea linea = new Linea(p, cantidad);  
 	    o.agregarLinea(linea);        //agregar                   
 }
-    //Actualizar una línea de una orden, a partir del número de orden, número de línea, código de producto y la cantidad.
-    public void actualizarLineaOrden(Integer numeroOrden, Integer numeroLinea, Integer codigoProducto, Double cantidad) {
-    	Orden o = obtenerOrden(numeroOrden);
-    	Producto p = obtenerProducto(codigoProducto);
-    	//metodos por agregar
+    // Actualizar una línea de una orden.
+    public void actualizarLineaOrden(Integer numOrden, Integer numLinea, Integer codigoP, Double cantidad) {
+        Orden o = ordenes.get(numOrden);        // busca la orden
+        Producto p = productos.get(codigoP);    // busca el nuevo producto
+        
+        Linea linea = o.getLineas().get(numLinea);  // agarra la línea 
+        
+        linea.setProducto(p);      // le cambia el producto
+        linea.setCantidad(cantidad); // le cambia la cantidad
     }
-    	
+    
     //Borrar una línea de una orden, a partir del número de orden y número de línea.
     	public void borrarLineaOrden(Integer numeroOrden, Integer numeroLinea) {
             Orden o = obtenerOrden(numeroOrden);
